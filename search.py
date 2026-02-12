@@ -1,11 +1,6 @@
 from node import Node
 import heapq
 
-# expand to generate new nodes based on curr state
-def expand(node, operators):
-    #filler for expand function
-    return
-
 # goal state 
 def problemGoalTest(state):
     return state == [1, 2, 3, 4, 5, 6, 7, 8, 0]
@@ -124,6 +119,26 @@ def misplacedTileHeuristic(state, goal_state):
     return count
 
 # a star misplaced
+def aStartarMisplacedTileHeuristic(problem):
+    start_node = Node(problem.initialState())
+    start_node.heuristic_cost = misplacedTileHeuristic(start_node.state)
+    nodes = []
+    heapq.heappush(nodes, start_node)
+    visited = set()
+
+    while nodes:
+        curr_node = heapq.heappop(nodes)
+        state_tuple = tuple(curr_node.state)
+        if state_tuple in visited:
+            continue
+        visited.add(state_tuple)
+        if problemGoalTest(curr_node.state):
+            return curr_node
+        children = expand(curr_node, problem.operators)
+        for child in children:
+            child.heuristic_cost = misplacedTileHeuristic(child.state)
+            heapq.heappush(nodes, child)
+    return "failure"
 
 # A* manhattan distance tile heuristic
 def aStarManhattanDistanceHeuristic():
