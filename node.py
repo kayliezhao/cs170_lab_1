@@ -5,6 +5,7 @@ class Node:
         self.parent = parent
         self.action = action 
         self.path_cost = path_cost  # g(n)
+        self.size = len(state) # size of the puzzle
         self.heuristic_cost = heuristic_cost  # h(n)
         self.depth = depth
 

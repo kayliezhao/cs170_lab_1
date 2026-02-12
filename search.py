@@ -1,9 +1,14 @@
+import math
 from node import Node
 import heapq
 
+grid_size = 3 # for 8 puzzle, grid size is 3x3
 # goal state 
 def problemGoalTest(state):
-    return state == [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+    n = grid_size * grid_size
+    goal_state = list(range(1, n)) + [0]
+    return state == goal_state
 
 # general search for taking in a problem and a queuing function 
 def generalSearch(problem, queuingFunction):
@@ -15,8 +20,7 @@ def generalSearch(problem, queuingFunction):
     nodes = []
     heapq.heappush(nodes, initialNode)  # (priority, node)
     # better for search
-    explored = set() 
-
+    visited = set() 
     while True:
         if not nodes:
             return "failure"
@@ -26,10 +30,9 @@ def generalSearch(problem, queuingFunction):
         # allows for mixing types of objects, cant change once made
         stateTuple = tuple(node.state) # convert list to tuple for set
 
-        if stateTuple in explored:
+        if stateTuple in visited:
             continue
-
-        explored.add(stateTuple)
+        visited.add(stateTuple)
 
         if problemGoalTest(node.state): # goal state is 1 2 3 4 5 6 7 8 9 0
             return node
@@ -41,13 +44,13 @@ def generalSearch(problem, queuingFunction):
 def isValidMove(state, operator):
     blankIndex = state.index(0)
     if operator == "up":
-        return blankIndex > 2 # up 0 1 2
+        return blankIndex >= grid_size # up 0 1 2
     elif operator == "down":
-        return blankIndex < 6 # down 6 7 8
+        return blankIndex < len(state)-grid_size # down 6 7 8
     elif operator == "left":
-        return blankIndex % 3 != 0 #  left 0 3 6
+        return blankIndex % grid_size != 0 #  left 0 3 6
     elif operator == "right":
-        return blankIndex % 3 != 2 # right 2 5 8 
+        return blankIndex % grid_size != grid_size - 1 # right 2 5 8 
     return False
 
 # nodes validation to generate any possible moves for blank tile: up down left right
@@ -64,9 +67,9 @@ def expand(node, operators):
             target_index = blank_index
             
             if action == "up":
-                target_index -= 3
+                target_index -= grid_size
             elif action == "down":
-                target_index += 3
+                target_index += grid_size
             elif action == "left":
                 target_index -= 1
             elif action == "right":
@@ -88,9 +91,9 @@ def uniformCostSearch(problem):
     heapq.heappush(nodes, start_node)    
     visited = set()
 
-    while True:
-        if not nodes:
-            return "failure"
+    while nodes:
+        # if not nodes:
+        #     return "failure"
     
         current_node = heapq.heappop(nodes)
         state_tuple = tuple(current_node.state)
@@ -108,17 +111,17 @@ def uniformCostSearch(problem):
         for child in children:
             child.heuristic_cost = 0
             heapq.heappush(nodes, child)
-    return 
+    return "failure"
 
 # misplaced tile heuristic helper function
-def misplacedTileHeuristic(state, goal_state):
+def misplacedTileHeuristic(state):
     count = 0
-    for i in range(len(state)): 
-        if state[i] != 0 and state[i] != goal_state[i]: 
-            count += 1
+    for i in range(len(state)):
+        if state[i] != 0:  # skip blank
+            if state[i] != i + 1:
+                count += 1
     return count
-
-# a star misplaced
+# a star misplaced tile heuristic
 def aStartarMisplacedTileHeuristic(problem):
     start_node = Node(problem.initialState())
     start_node.heuristic_cost = misplacedTileHeuristic(start_node.state)
@@ -139,8 +142,39 @@ def aStartarMisplacedTileHeuristic(problem):
             child.heuristic_cost = misplacedTileHeuristic(child.state)
             heapq.heappush(nodes, child)
     return "failure"
+#helper function
+def manhattanDistanceHeuristic(state):
+    distance = 0
+    for i in range(len(state)): 
+        if state[i] != 0:
+            curr_row = i // grid_size
+            curr_col = i % grid_size
+            
+            goal_index = state[i] - 1
+            goal_row = goal_index // grid_size
+            goal_col = goal_index % grid_size
+            
+            distance += abs(curr_row - goal_row) + abs(curr_col - goal_col)
+    return distance
 
 # A* manhattan distance tile heuristic
-def aStarManhattanDistanceHeuristic():
-    #filler
-    return
+def aStarManhattanDistanceHeuristic(problem):
+    start_node = Node(problem.initialState())
+    start_node.heuristic_cost = manhattanDistanceHeuristic(start_node.state)
+    nodes = []
+    heapq.heappush(nodes, start_node)
+    visited = set()
+
+    while nodes:
+        curr_node = heapq.heappop(nodes)
+        state_tuple = tuple(curr_node.state)
+        if state_tuple in visited:
+            continue
+        visited.add(state_tuple)
+        if problemGoalTest(curr_node.state):
+            return curr_node
+        children = expand(curr_node, problem.operators)
+        for child in children:
+            child.heuristic_cost = manhattanDistanceHeuristic(child.state)
+            heapq.heappush(nodes, child)
+    return "failure"
