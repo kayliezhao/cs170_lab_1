@@ -64,7 +64,6 @@ def expand(node, operators):
     blank_index = node.state.index(0)
     
     for action in moves: 
-
         if isValidMove(node.state, action):
             new_state = node.state.copy()
             target_index = blank_index
@@ -85,17 +84,48 @@ def expand(node, operators):
 
     return expanded_nodes
 
-#uniform cost search
+#uniform cost search expand cheapest node, cost = path cost g(n)
 def uniformCostSearch(problem):
-    #filler
-    return
+    start_node = Node(problem.initialState())
+    start_node.heuristic_cost = 0
+    nodes = []
 
-#misplaced tile heuristic
-def misplacedTileHeuristic(problem):
-    #filler
-    return
+    heapq.heappush(nodes, start_node)    
+    visited = set()
+
+    while True:
+        if not nodes:
+            return "failure"
+    
+        current_node = heapq.heappop(nodes)
+        state_tuple = tuple(current_node.state)
+
+        if state_tuple in visited:
+            continue
+
+        visited.add(state_tuple)
+
+        if problemGoalTest(current_node.state):
+            return current_node
+        
+        children = expand(current_node, problem.operators)
+        
+        for child in children:
+            child.heuristic_cost = 0
+            heapq.heappush(nodes, child)
+    return 
+
+# misplaced tile heuristic helper function
+def misplacedTileHeuristic(state, goal_state):
+    count = 0
+    for i in range(len(state)): 
+        if state[i] != 0 and state[i] != goal_state[i]: 
+            count += 1
+    return count
+
+# a star misplaced
 
 # A* manhattan distance tile heuristic
-def manhattanDistanceHeuristic(problem):
+def aStarManhattanDistanceHeuristic():
     #filler
     return
