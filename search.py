@@ -157,6 +157,8 @@ def aStarMisplacedTileHeuristic(problem):
 
     # visiting nodes
     while nodes:
+        max_queue_size = max(max_queue_size, len(nodes))   
+
         curr_node = heapq.heappop(nodes)
         state_tuple = tuple(curr_node.state)
         if state_tuple in visited:
@@ -214,6 +216,7 @@ def aStarManhattanDistanceHeuristic(problem):
 
     # search as long as there are nodes to expand
     while nodes:
+        max_queue_size = max(max_queue_size, len(nodes))   
         curr_node = heapq.heappop(nodes)
         state_tuple = tuple(curr_node.state)
         if state_tuple in visited:
