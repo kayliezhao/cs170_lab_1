@@ -5,16 +5,22 @@ import heapq
 grid_size = 3 # for 8 puzzle, grid size is 3x3
 # goal state 
 def problemGoalTest(state):
-
     n = grid_size * grid_size
     goal_state = list(range(1, n)) + [0]
     return state == goal_state
+
+class Problem:
+    def __init__(self, initial_state):
+            self.initial_state = initial_state
+            self.operators = None
+        
+    def initialState(self):  
+        return self.initial_state
 
 # general search for taking in a problem and a queuing function 
 def generalSearch(problem, queuingFunction):
     # nodes = MAKE-QUEUE(MAKE-NODE(problem.INITIAL-STATE))
     # nodes = makeQueue(makeNode(problem.initialState()))
-    
     initialNode = Node(problem.initialState())
 
     nodes = []
@@ -178,3 +184,9 @@ def aStarManhattanDistanceHeuristic(problem):
             child.heuristic_cost = manhattanDistanceHeuristic(child.state)
             heapq.heappush(nodes, child)
     return "failure"
+
+def print_puzzle(state):
+    for i in range(0, len(state), grid_size):
+        print(state[i:i+grid_size])
+    print()
+
