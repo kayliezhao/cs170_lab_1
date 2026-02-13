@@ -92,15 +92,16 @@ def expand(node, operators):
 def uniformCostSearch(problem):
     start_node = Node(problem.initialState())
     start_node.heuristic_cost = 0
+    max_queue_size = 0
+    nodes_expanded = 0
     nodes = []
 
     heapq.heappush(nodes, start_node)    
     visited = set()
 
     while nodes:
-        # if not nodes:
-        #     return "failure"
-    
+        max_queue_size = max(max_queue_size, len(nodes))   
+
         current_node = heapq.heappop(nodes)
         state_tuple = tuple(current_node.state)
 
@@ -108,6 +109,22 @@ def uniformCostSearch(problem):
             continue
 
         visited.add(state_tuple)
+        nodes_expanded += 1
+
+
+        #print trace
+        print(f"The best state to expand with a g(n) = {current_node.depth} and h(n) = {current_node.heuristic_cost} is…")
+        print_puzzle(current_node.state)
+
+        if problemGoalTest(current_node.state):
+            # Print final stats
+            print("End of search!")
+            print(f"Solution depth was {current_node.depth}")
+            print(f"Number of nodes expanded: {nodes_expanded}")
+            print(f"Max queue size: {max_queue_size}")
+            return current_node
+        
+        nodes_expanded += 1
 
         if problemGoalTest(current_node.state):
             return current_node
