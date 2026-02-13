@@ -102,34 +102,32 @@ def uniformCostSearch(problem):
     while nodes:
         max_queue_size = max(max_queue_size, len(nodes))   
 
-        current_node = heapq.heappop(nodes)
-        state_tuple = tuple(current_node.state)
+        curr_node = heapq.heappop(nodes)
+        state_tuple = tuple(curr_node.state)
 
         if state_tuple in visited:
             continue
 
         visited.add(state_tuple)
-        nodes_expanded += 1
-
 
         #print trace
-        print(f"The best state to expand with a g(n) = {current_node.depth} and h(n) = {current_node.heuristic_cost} is…")
-        print_puzzle(current_node.state)
+        print(f"The best state to expand with a g(n) = {curr_node.depth} and h(n) = {curr_node.heuristic_cost} is…")
+        print_puzzle(curr_node.state)
 
-        if problemGoalTest(current_node.state):
+        if problemGoalTest(curr_node.state):
             # Print final stats
             print("End of search!")
-            print(f"Solution depth was {current_node.depth}")
+            print(f"Solution depth was {curr_node.depth}")
             print(f"Number of nodes expanded: {nodes_expanded}")
             print(f"Max queue size: {max_queue_size}")
-            return current_node
+            return curr_node
         
         nodes_expanded += 1
 
-        if problemGoalTest(current_node.state):
-            return current_node
+        if problemGoalTest(curr_node.state):
+            return curr_node
         
-        children = expand(current_node, problem.operators)
+        children = expand(curr_node, problem.operators)
         
         for child in children:
             child.heuristic_cost = 0
@@ -145,10 +143,13 @@ def misplacedTileHeuristic(state):
                 count += 1
     return count
 # a star misplaced tile heuristic
-def aStartarMisplacedTileHeuristic(problem):
+def aStarMisplacedTileHeuristic(problem):
     start_node = Node(problem.initialState())
     start_node.heuristic_cost = misplacedTileHeuristic(start_node.state)
+    max_queue_size = 0
+    nodes_expanded = 0
     nodes = []
+
     heapq.heappush(nodes, start_node)
     visited = set()
 
@@ -158,6 +159,21 @@ def aStartarMisplacedTileHeuristic(problem):
         if state_tuple in visited:
             continue
         visited.add(state_tuple)
+
+        #print trace
+        print(f"The best state to expand with a g(n) = {curr_node.depth} and h(n) = {curr_node.heuristic_cost} is…")
+        print_puzzle(curr_node.state)
+
+        if problemGoalTest(curr_node.state):
+            # Print final stats
+            print("End of search!")
+            print(f"Solution depth was {curr_node.depth}")
+            print(f"Number of nodes expanded: {nodes_expanded}")
+            print(f"Max queue size: {max_queue_size}")
+            return curr_node
+        
+        nodes_expanded += 1
+
         if problemGoalTest(curr_node.state):
             return curr_node
         children = expand(curr_node, problem.operators)
@@ -185,6 +201,8 @@ def aStarManhattanDistanceHeuristic(problem):
     start_node = Node(problem.initialState())
     start_node.heuristic_cost = manhattanDistanceHeuristic(start_node.state)
     nodes = []
+    nodes_expanded = 0
+    max_queue_size = 0
     heapq.heappush(nodes, start_node)
     visited = set()
 
@@ -194,6 +212,21 @@ def aStarManhattanDistanceHeuristic(problem):
         if state_tuple in visited:
             continue
         visited.add(state_tuple)
+
+        #print trace
+        print(f"The best state to expand with a g(n) = {curr_node.depth} and h(n) = {curr_node.heuristic_cost} is…")
+        print_puzzle(curr_node.state)
+
+        if problemGoalTest(curr_node.state):
+            # Print final stats
+            print("End of search!")
+            print(f"Solution depth was {curr_node.depth}")
+            print(f"Number of nodes expanded: {nodes_expanded}")
+            print(f"Max queue size: {max_queue_size}")
+            return curr_node
+        
+        nodes_expanded += 1
+
         if problemGoalTest(curr_node.state):
             return curr_node
         children = expand(curr_node, problem.operators)

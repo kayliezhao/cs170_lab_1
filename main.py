@@ -71,9 +71,9 @@ def main():
     if choice == '1':
         search.uniformCostSearch(problem)
     elif choice == '2':
-        search.misplacedTileHeuristic(problem)
+        search.aStarMisplacedTileHeuristic(problem)
     elif choice == '3':
-        search.manhattanDistanceHeuristic(problem)
+        search.aStarManhattanDistanceHeuristic(problem)
     else:
         print("Invalid choice. Please select an option from 1 to 3.")
         return
