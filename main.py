@@ -15,6 +15,7 @@ def main():
     print("Type '1' to use a default puzzle, or '2' for a custom one")
     choice = input().strip()
 
+# choice 1 is for default puzzles, choice 2 is for custom puzzles
     if choice == '1':
         print("Select a default puzzle: ")
         print("1) Trivial, ")
@@ -23,25 +24,22 @@ def main():
         print("4) Doable, ")
         print("5) Oh Boy")
         
+        #possible default puzzle choices
         default_choice = input()
         if default_choice == '1':
             puzzle = trivial
-            # search.print_puzzle(puzzle)
         elif default_choice == '2':
             puzzle = veryEasy
-            # search.print_puzzle(puzzle)
         elif default_choice == '3':
             puzzle = easy
-            # search.print_puzzle(puzzle)
         elif default_choice == '4':
             puzzle = doable
-            # search.print_puzzle(puzzle)
         elif default_choice == '5':
             puzzle = oh_boy
         else:
             print("Invalid choice. Please select a number from 1 to 5.")
             return
-    elif choice == '2':
+    elif choice == '2': # custom puzzle choice
         print("Enter your own custom puzzle")
         print("Enter your puzzle with spaces separating each number")
         print("and a 0 to represent the blank space. \n Please only enter valid 8-puzzles!")
@@ -62,6 +60,7 @@ def main():
     problem = search.Problem(puzzle)
     search.print_puzzle(puzzle)
 
+    #algorithm choices
     print("Select an algorithm: ")
     print("1) uniform cost search, ")
     print("2) misplaced tile heuristic, or ")

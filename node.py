@@ -1,5 +1,6 @@
 #node class 
 class Node:
+    # initialized constructor for node class 
     def __init__(self, state, parent=None, action=None, path_cost=0, heuristic_cost=0, depth=0):
         self.state = state #state of puzzle
         self.parent = parent

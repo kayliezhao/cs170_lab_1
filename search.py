@@ -1,14 +1,15 @@
-import math
 from node import Node
 import heapq
 
 grid_size = 3 # for 8 puzzle, grid size is 3x3
+
 # goal state 
 def problemGoalTest(state):
     n = grid_size * grid_size
     goal_state = list(range(1, n)) + [0]
     return state == goal_state
 
+# problem class to hold initial state and operators
 class Problem:
     def __init__(self, initial_state):
             self.initial_state = initial_state
@@ -20,7 +21,6 @@ class Problem:
 # general search for taking in a problem and a queuing function 
 def generalSearch(problem, queuingFunction):
     # nodes = MAKE-QUEUE(MAKE-NODE(problem.INITIAL-STATE))
-    # nodes = makeQueue(makeNode(problem.initialState()))
     initialNode = Node(problem.initialState())
 
     nodes = []
@@ -30,7 +30,6 @@ def generalSearch(problem, queuingFunction):
     while True:
         if not nodes:
             return "failure"
-        # node = removeFront(nodes)
 
         node = heapq.heappop(nodes) # pop off top cuz queue
         # allows for mixing types of objects, cant change once made
@@ -67,6 +66,8 @@ def expand(node, operators):
     # try moving up down left right and if it's valid then create a new node with the new state and add it to expanded nodes
     blank_index = node.state.index(0)
     
+    # checking if each move is a valid move
+    # if valid then create new state
     for action in moves: 
         if isValidMove(node.state, action):
             new_state = node.state.copy()
@@ -99,6 +100,7 @@ def uniformCostSearch(problem):
     heapq.heappush(nodes, start_node)    
     visited = set()
 
+    # visiting nodes
     while nodes:
         max_queue_size = max(max_queue_size, len(nodes))   
 
@@ -110,12 +112,12 @@ def uniformCostSearch(problem):
 
         visited.add(state_tuple)
 
-        #print trace
+        # print trace
         print(f"The best state to expand with a g(n) = {curr_node.depth} and h(n) = {curr_node.heuristic_cost} is…")
         print_puzzle(curr_node.state)
 
         if problemGoalTest(curr_node.state):
-            # Print final stats
+            # print final stats
             print("End of search!")
             print(f"Solution depth was {curr_node.depth}")
             print(f"Number of nodes expanded: {nodes_expanded}")
@@ -129,7 +131,7 @@ def uniformCostSearch(problem):
         
         children = expand(curr_node, problem.operators)
         
-        for child in children:
+        for child in children: #set heuristic cost to 0 for uniform cost search
             child.heuristic_cost = 0
             heapq.heappush(nodes, child)
     return "failure"
@@ -153,6 +155,7 @@ def aStarMisplacedTileHeuristic(problem):
     heapq.heappush(nodes, start_node)
     visited = set()
 
+    # visiting nodes
     while nodes:
         curr_node = heapq.heappop(nodes)
         state_tuple = tuple(curr_node.state)
@@ -174,18 +177,20 @@ def aStarMisplacedTileHeuristic(problem):
         
         nodes_expanded += 1
 
-        if problemGoalTest(curr_node.state):
+        if problemGoalTest(curr_node.state): # check if curr node is goal state before expanding
             return curr_node
         children = expand(curr_node, problem.operators)
         for child in children:
             child.heuristic_cost = misplacedTileHeuristic(child.state)
             heapq.heappush(nodes, child)
     return "failure"
-#helper function
+#helper function to calculate manhattan distance heuristic
 def manhattanDistanceHeuristic(state):
     distance = 0
+    
+    # iterate thru each tile to calculate total manhattan distance
     for i in range(len(state)): 
-        if state[i] != 0:
+        if state[i] != 0: #skip blank tile
             curr_row = i // grid_size
             curr_col = i % grid_size
             
@@ -193,6 +198,7 @@ def manhattanDistanceHeuristic(state):
             goal_row = goal_index // grid_size
             goal_col = goal_index % grid_size
             
+            #add distance tile needs to travel with the total
             distance += abs(curr_row - goal_row) + abs(curr_col - goal_col)
     return distance
 
@@ -206,6 +212,7 @@ def aStarManhattanDistanceHeuristic(problem):
     heapq.heappush(nodes, start_node)
     visited = set()
 
+    # search as long as there are nodes to expand
     while nodes:
         curr_node = heapq.heappop(nodes)
         state_tuple = tuple(curr_node.state)
@@ -227,7 +234,7 @@ def aStarManhattanDistanceHeuristic(problem):
         
         nodes_expanded += 1
 
-        if problemGoalTest(curr_node.state):
+        if problemGoalTest(curr_node.state): #calculate manhattan distance heuristic before adding to queue
             return curr_node
         children = expand(curr_node, problem.operators)
         for child in children:
@@ -235,6 +242,7 @@ def aStarManhattanDistanceHeuristic(problem):
             heapq.heappush(nodes, child)
     return "failure"
 
+#prints the puzzle
 def print_puzzle(state):
     for i in range(0, len(state), grid_size):
         print(state[i:i+grid_size])
